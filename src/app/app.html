@@ -1,1 +1,43 @@
-<h1>{{ title() }}</h1>
+<form class="intake-form" (submit)="onSubmit(); $event.preventDefault()">
+  <h1>Project Intake Form</h1>
+
+  <label class="field">
+    <span>Project Name</span>
+    <input type="text" [formField]="intakeForm.projectName" />
+    @if (intakeForm.projectName().touched() &&
+    intakeForm.projectName().errors().length) {
+    <span class="error"
+      >{{ intakeForm.projectName().errors()[0].message }}</span
+    >
+    }
+  </label>
+
+  <label class="field">
+    <span>Project Description</span>
+    <textarea type="text" [formField]="intakeForm.description"></textarea>
+    @if (intakeForm.description().touched() &&
+    intakeForm.description().errors().length) {
+    <span class="error"
+      >{{ intakeForm.description().errors()[0].message }}</span
+    >
+    }
+  </label>
+
+  <label class="field">
+    <span>Project Code</span>
+    <input type="text" [formField]="intakeForm.projectCode" />
+    @if (intakeForm.projectCode().touched() &&
+    intakeForm.projectCode().errors().length) {
+    <span class="error"
+      >{{ intakeForm.projectCode().errors()[0].message }}</span
+    >
+    }
+  </label>
+
+  <label class="field checkbox">
+    <span>Is Remote</span>
+    <input type="checkbox" [formField]="intakeForm.isRemote" />
+  </label>
+
+  <button type="submit" [disabled]="intakeForm().invalid()">Submit</button>
+</form>
