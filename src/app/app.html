@@ -39,5 +39,58 @@
     <input type="checkbox" [formField]="intakeForm.isRemote" />
   </label>
 
-  <button type="submit" [disabled]="intakeForm().invalid()">Submit</button>
+  @if (!intakeForm.contactAddress().hidden()) {
+  <label class="field">
+    <span>Street Address</span>
+    <input type="text" [formField]="intakeForm.contactAddress.street" />
+    @if (intakeForm.contactAddress.street().touched() &&
+    intakeForm.contactAddress.street().errors().length) {
+    <span class="error"
+      >{{ intakeForm.contactAddress.street().errors()[0].message }}</span
+    >
+    }
+  </label>
+
+  <label class="field">
+    <span>City</span>
+    <input type="text" [formField]="intakeForm.contactAddress.city" />
+    @if (intakeForm.contactAddress.city().touched() &&
+    intakeForm.contactAddress.city().errors().length) {
+    <span class="error"
+      >{{ intakeForm.contactAddress.city().errors()[0].message }}</span
+    >
+    }
+  </label>
+
+  <label class="field">
+    <span>Zip Code</span>
+    <input type="text" [formField]="intakeForm.contactAddress.zipCode" />
+    @if (intakeForm.contactAddress.zipCode().touched() &&
+    intakeForm.contactAddress.zipCode().errors().length) {
+    <span class="error"
+      >{{ intakeForm.contactAddress.zipCode().errors()[0].message }}</span
+    >
+    }
+  </label>
+  }
+
+  <fieldset>
+    <legend>Budget</legend>
+    <label class="field">
+      <span>Travel Budget (USD)</span>
+      <input type="number" [formField]="intakeForm.travelBudget" />
+      @if (intakeForm.travelBudget().touched() &&
+      intakeForm.travelBudget().errors().length) {
+      <span class="error"
+        >{{ intakeForm.travelBudget().errors()[0].message }}</span
+      >
+      } @if (intakeForm.travelBudget().disabled()) {
+      <span class="hint">Disabled while the project is remote</span>
+      }
+    </label>
+  </fieldset>
+
+  <button type="submit" class="submit-btn" [disabled]="intakeForm().invalid()">
+    Submit
+  </button>
 </form>
