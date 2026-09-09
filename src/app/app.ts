@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { IntakeModel } from './models/intake.model';
 
-import { form, FormField, applyWhen, validate, hidden, required, minLength, maxLength, pattern, submit, disabled } from '@angular/forms/signals';
+import { form, FormField, applyWhen, validate, hidden, required, minLength, maxLength, pattern, submit, disabled, applyEach, email } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +21,8 @@ export class App {
       street: '',
       city: '',
       zipCode: ''
-    }
+    },
+    members: [{ name: '', role: '', email: '' }]
   });
 
   protected readonly intakeForm = form(this.model, (schema) => {
@@ -60,7 +61,30 @@ export class App {
     disabled(schema.travelBudget, {
       when: ({ valueOf }) => valueOf(schema.isRemote), // Disable travelBudget if isRemote is true
     });
+
+    applyEach(schema.members, (member) => {
+      required(member.name, { message: 'Member name is required' });
+      required(member.role, { message: 'Member role is required' });
+      required(member.email, { message: 'Member email is required' });
+      email(member.email, { message: 'Member email must be a valid email address' });
+    });
+
+    minLength(schema.members, 1, { message: 'At least one team member is required' });
   });
+
+  addMember() {
+    this.model.update((m) => ({
+      ...m,
+      members: [...m.members, { name: '', role: '', email: '' }]
+    }))
+  }
+
+  removeMember(index: number) {
+    this.model.update((m) => ({
+      ...m,
+      members: m.members.filter((_, i) => i !== index)
+    }))
+  }
 
 
   onSubmit() {

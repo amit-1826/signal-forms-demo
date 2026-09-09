@@ -90,6 +90,54 @@
     </label>
   </fieldset>
 
+  <fieldset>
+    <legend>Team Members {{intakeForm.members.length}}</legend>
+
+    @if (intakeForm.members().touched() && intakeForm.members().errors().length)
+    {
+    <span class="error">{{ intakeForm.members().errors()[0].message }}</span>
+    } @for(member of intakeForm.members; track $index; let i=$index) {
+    <div class="member-row">
+      <label class="field">
+        <span>Name</span>
+        <input [formField]="member.name" placeholder="Name" />
+        @if (member.name().touched() && member.name().errors().length) {
+        <span class="error">{{member.name().errors()[0].message}}</span>
+        }
+      </label>
+
+      <label class="field">
+        <span>Role</span>
+        <input [formField]="member.role" placeholder="Role" />
+        @if (member.role().touched() && member.role().errors().length) {
+        <span class="error">{{member.role().errors()[0].message}}</span>
+        }
+      </label>
+
+      <label class="field">
+        <span>Email</span>
+        <input [formField]="member.email" placeholder="Email" />
+        @if (member.email().touched() && member.email().errors().length) {
+        <span class="error">{{member.email().errors()[0].message}}</span>
+        }
+      </label>
+
+      <button
+        class="remove-btn"
+        type="button"
+        [disabled]="intakeForm.members.length <= 1"
+        (click)="removeMember(i)"
+      >
+        Remove
+      </button>
+    </div>
+    }
+
+    <button class="add-btn" type="button" (click)="addMember()">
+      Add Member
+    </button>
+  </fieldset>
+
   <button type="submit" class="submit-btn" [disabled]="intakeForm().invalid()">
     Submit
   </button>
