@@ -1,7 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, resource, inject } from '@angular/core';
 import { IntakeModel } from './models/intake.model';
 
-import { form, FormField, applyWhen, validate, hidden, required, minLength, maxLength, pattern, submit, disabled, applyEach, email } from '@angular/forms/signals';
+import { form, FormField, validateAsync, applyWhen, validate, hidden, required, minLength, maxLength, pattern, submit, disabled, applyEach, email } from '@angular/forms/signals';
+import { IntakeApiService } from './services/intake.service';
 
 @Component({
   selector: 'app-root',
@@ -10,6 +11,8 @@ import { form, FormField, applyWhen, validate, hidden, required, minLength, maxL
   imports: [FormField]
 })
 export class App {
+
+  private apiService = inject(IntakeApiService);
 
   protected readonly model = signal<IntakeModel>({
     projectName: '',
@@ -30,6 +33,21 @@ export class App {
     minLength(schema.projectName, 3, { message: 'Project name must be at least 3 characters long' });
     maxLength(schema.description, 500, { message: 'Description must be less than 500 characters' });
     pattern(schema.projectCode, /^[A-Za-z0-9-]{3,20}$/, { message: 'Project code must be alphanumeric with dashes and between 3 and 20 characters' });
+
+    validateAsync(schema.projectCode, {
+      debounce: 500, // Debounce the validation to avoid excessive API calls
+      params: ({ value }) => value(),
+      factory: (code) =>
+        resource({
+          params: code,
+          loader: async ({ params: value }) => {
+            if (!value) return false;
+            return this.apiService.isCodeTaken(value);
+          }
+        }),
+      onSuccess: (isTaken) => isTaken ? { kind: 'projectCode', message: 'Project code is already taken' } : null,
+      onError: () => ({ kind: 'projectCode', message: 'Error checking project code availability' })
+    });
 
     hidden(schema.contactAddress, {
       when: ({ valueOf }) => valueOf(schema.isRemote), // Hide contactAddress if isRemote is true

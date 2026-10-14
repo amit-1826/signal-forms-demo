@@ -25,7 +25,14 @@
 
   <label class="field">
     <span>Project Code</span>
-    <input type="text" [formField]="intakeForm.projectCode" />
+    <div class="input-with-status">
+      <input type="text" [formField]="intakeForm.projectCode" />
+
+      @if (intakeForm.projectCode().pending()) {
+      <span class="spinner"></span>
+      }
+    </div>
+
     @if (intakeForm.projectCode().touched() &&
     intakeForm.projectCode().errors().length) {
     <span class="error"
@@ -138,7 +145,11 @@
     </button>
   </fieldset>
 
-  <button type="submit" class="submit-btn" [disabled]="intakeForm().invalid()">
+  <button
+    type="submit"
+    class="submit-btn"
+    [disabled]="intakeForm().invalid() || intakeForm().pending()"
+  >
     Submit
   </button>
 </form>
